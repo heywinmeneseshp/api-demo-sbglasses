@@ -1,4 +1,5 @@
 const faker = require('faker'); //libreria para crear data fake al azar
+const boom = require('@hapi/boom'); //libreria para manejar errores
 
 class ProductsService {
 
@@ -16,6 +17,8 @@ class ProductsService {
           name: faker.commerce.productName(), //Nombre al azar
           price: parseInt(faker.commerce.price()), //Numero al azar
           image: faker.image.imageUrl(), //imagen al azar
+          category: 'default',
+          isBlock: faker.datatype.boolean(),
         }
       )
     }
@@ -35,13 +38,20 @@ class ProductsService {
   }
 
   findOne(id) {
-    return this.products.find(item => item.id === id);
+    const product = this.products.find(item => item.id === id)
+    if (!product) {
+      throw boom.notFound('No se encuentra el producto');
+    }
+    if (product.isBlock) {
+      throw boom.conflict('Producto bloqueado');
+    }
+    return product;
   }
 
   update(id, changes) {
     const index = this.products.findIndex(item => item.id === id);
     if (index === -1){
-      throw new Error('Product not found')
+      throw boom.notFound('No se encuentra en el producto');
     }
     const product = this.products[index];
     this.products[index] = {
@@ -54,7 +64,7 @@ class ProductsService {
   delete(id) {
     const index = this.products.findIndex(item => item.id === id);
     if (index === -1) {
-      throw new Error('product not found');
+      throw boom.notFound('No se encuentra en el producto');
     }
     this.products.splice(index, 1);
     return {
