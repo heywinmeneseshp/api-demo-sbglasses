@@ -8,9 +8,9 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json()); //este middleware se usa para ppoder resivir informacion en formato JSON
-
+/*
  //Codigo para restringir el ingreso a otros dominios
-const whiteList = ['htpps://myapp.co', 'http:/localhost:3000'];
+const whiteList = ['htpps://heywin.co', 'http:/localhost:3000'];
 const options = {
   origin: (origin, cb) => {
     if (whiteList.includes(origin) || !origin) {
@@ -21,9 +21,9 @@ const options = {
   }
 }
 app.use(cors(options));
-/*
-app.use(cors());
 */
+app.use(cors());
+
 app.get('/', (req, res) => {
   res.send('Hola, soy un servidor en express')
 });
